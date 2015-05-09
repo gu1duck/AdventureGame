@@ -33,12 +33,15 @@ Room* goal = NULL;
 Room* builder = NULL;
 int dungeonX = 4;
 int dungeonY = 4;
+int gameState = 0;
 
 void promptPlayer(Room* pointer);
 Room* getInput(Room* playerPosition);
 
 int randomNumber(int max);
 Room* placeObject(int sizeX, int sizeY);
+void checkCollisions (Player* player);
+void takeDamage (Player* player);
 
 void buildAllRooms(int sizeX, int sizeY);
 int numberOfRoomsWestOfBuilder();
@@ -58,26 +61,66 @@ int main(int argc, const char * argv[]) {
     //Create Player, cube and goal in different locations
     Player *player = (Player*)malloc(sizeof(Player));
     player->position = placeObject(dungeonX, dungeonY);
-    while (cube == NULL || cube == goal || cube == player->position){
-        cube = placeObject(dungeonX, dungeonY);
-    }
-    while (goal == NULL || goal == cube || goal == player->position){
-        goal = placeObject(dungeonX, dungeonY);
-    }
+    player->health  = 100;
     
+    do {
+        cube = placeObject(dungeonX, dungeonY);
+    } while (cube == goal || cube == player->position);
+        
+    do {
+        goal = placeObject(dungeonX, dungeonY);
+    } while (goal == cube || goal == player->position);
+    
+    gameState = 1;
     do {
         //Prompt
         promptPlayer(player->position);
         player->position = getInput(player->position);
         //Check Collisions
+        checkCollisions(player);
         //Win
         //Take Damage
         //Die
-    } while (1);
+    } while (gameState == 1);
     
     
     
     return 0;
+}
+
+void win(){
+    printf("****You found the treasure! Congratulations, you win!****\n");
+    gameState = 0;
+}
+
+void lose(){
+    printf("****You died to the deadly gelatinous cube!****\n");
+    gameState = 0;
+}
+
+void takeDamage (Player* player){
+    printf("**** You encounter the deadly gelatinous cube!****\n");
+    player->health -= 50;
+    printf("Health reduced to %d\n\n", player->health);
+    
+    //check death
+    if (player->health < 1) {
+        lose();
+    } else {
+        //if player isn't dead, move the cube
+        do {
+            cube = placeObject(dungeonX, dungeonY);
+        } while (cube == goal || cube == player->position);
+    }
+}
+
+void checkCollisions (Player* player){
+    if (player->position == cube){
+        takeDamage(player);
+    }
+    if (player->position == goal){
+    //    win();
+    }
 }
 
 Room* getInput(Room* playerPosition){
@@ -91,6 +134,7 @@ Room* getInput(Room* playerPosition){
                 return getInput(playerPosition);
             } else {
                 playerPosition = playerPosition->north;
+                printf("MOVED NORTH\n\n");
             }
             break;
         case 's':
@@ -100,6 +144,7 @@ Room* getInput(Room* playerPosition){
                 return getInput(playerPosition);
             } else {
                 playerPosition = playerPosition->south;
+                printf("MOVED SOUTH\n\n");
             }
             break;
         case 'e':
@@ -109,6 +154,7 @@ Room* getInput(Room* playerPosition){
                 return getInput(playerPosition);
             } else {
                 playerPosition = playerPosition->east;
+                printf("MOVED EAST\n\n");
             }
             break;
         case 'w':
@@ -118,6 +164,7 @@ Room* getInput(Room* playerPosition){
                 return getInput(playerPosition);
             } else {
                 playerPosition = playerPosition->west;
+                printf("MOVED WEST\n\n");
             }
             break;
         default:
