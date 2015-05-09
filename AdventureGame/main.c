@@ -26,6 +26,7 @@ typedef struct Player Player;
 struct Player {
     Room* position;
     int health;
+    char* name;
 };
 
 Room* cube = NULL;
@@ -35,8 +36,10 @@ int dungeonX = 4;
 int dungeonY = 4;
 int gameState = 0;
 
-void promptPlayer(Room* pointer);
-Room* movePlayer(Room* playerPosition);
+char* getInput();
+char* getName();
+void promptPlayer(Player* player);
+Room* movePlayer(Player* player);
 
 int randomNumber(int max);
 Room* placeObject(int sizeX, int sizeY);
@@ -62,6 +65,7 @@ int main(int argc, const char * argv[]) {
     Player *player = (Player*)malloc(sizeof(Player));
     player->position = placeObject(dungeonX, dungeonY);
     player->health  = 100;
+    player->name = getName();
     
     do {
         cube = placeObject(dungeonX, dungeonY);
@@ -74,8 +78,8 @@ int main(int argc, const char * argv[]) {
     gameState = 1;
     do {
         //Prompt
-        promptPlayer(player->position);
-        player->position = movePlayer(player->position);
+        promptPlayer(player);
+        player->position = movePlayer(player);
         //Check Collisions
         checkCollisions(player);
         //Win
@@ -86,6 +90,12 @@ int main(int argc, const char * argv[]) {
     
     
     return 0;
+}
+
+char* getName(){
+    printf("What is your name, adventurer?\n>");
+    char* input = getInput();
+    return input;
 }
 
 void win(){
@@ -129,68 +139,68 @@ char* getInput(){
     return input;
 }
 
-Room* movePlayer(Room* playerPosition){
+Room* movePlayer(Player* player){
     char* input = getInput();
     switch (input[0]) {
         case 'n':
         case 'N':
-            if (playerPosition->north == NULL){
+            if (player->position->north == NULL){
                 printf("You can't move that way\n>");
-                return movePlayer(playerPosition);
+                return movePlayer(player);
             } else {
-                playerPosition = playerPosition->north;
+                player->position = player->position->north;
                 printf("MOVED NORTH\n\n");
             }
             break;
         case 's':
         case 'S':
-            if (playerPosition->south == NULL){
+            if (player->position->south == NULL){
                 printf("You can't move that way\n>");
-                return movePlayer(playerPosition);
+                return movePlayer(player);
             } else {
-                playerPosition = playerPosition->south;
+                player->position = player->position->south;
                 printf("MOVED SOUTH\n\n");
             }
             break;
         case 'e':
         case 'E':
-            if (playerPosition->east == NULL){
+            if (player->position->east == NULL){
                 printf("You can't move that way\n>");
-                return movePlayer(playerPosition);
+                return movePlayer(player);
             } else {
-                playerPosition = playerPosition->east;
+                player->position = player->position->east;
                 printf("MOVED EAST\n\n");
             }
             break;
         case 'w':
         case 'W':
-            if (playerPosition->west == NULL){
+            if (player->position->west == NULL){
                 printf("You can't move that way\n>");
-                return movePlayer(playerPosition);
+                return movePlayer(player);
             } else {
-                playerPosition = playerPosition->west;
+                player->position = player->position->west;
                 printf("MOVED WEST\n\n");
             }
             break;
         default:
-            printf("What do you mean? Which direction?\n>");
-            return movePlayer(playerPosition);
+            printf("What do you mean? Which direction?\n%s>", player->name);
+            return movePlayer(player);
             break;
     }
-    return playerPosition;
+    return player->position;
 }
 
-void promptPlayer(Room* pointer){
+void promptPlayer(Player* player){
     printf("You are in a dark room. There are available exits in the following directions:\n");
-    if (pointer->north != NULL)
+    if (player->position->north != NULL)
         printf("NORTH ");
-    if (pointer->south != NULL)
+    if (player->position->south != NULL)
         printf("SOUTH ");
-    if (pointer->east != NULL)
+    if (player->position->east != NULL)
         printf("EAST ");
-    if (pointer->west != NULL)
+    if (player->position->west != NULL)
         printf("WEST ");
-    printf("\nEnter the direction in which you would like to move.\n>");
+    printf("\nEnter the direction in which you would like to move.\n%s>", player->name);
 }
 
 int randomNumber(int max){
