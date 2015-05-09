@@ -31,18 +31,21 @@ struct Player {
 
 Room* cube = NULL;
 Room* goal = NULL;
+Room* gem  = NULL;
 Room* builder = NULL;
 int dungeonX = 4;
 int dungeonY = 4;
 int gameState = 0;
 
+int randomNumber(int max);
 char* getInput();
 char* getName();
+
+void placeEncounters (Player* player);
+Room* placeObject(int sizeX, int sizeY);
+
 void promptPlayer(Player* player);
 Room* movePlayer(Player* player);
-
-int randomNumber(int max);
-Room* placeObject(int sizeX, int sizeY);
 void checkCollisions (Player* player);
 void takeDamage (Player* player);
 
@@ -67,13 +70,7 @@ int main(int argc, const char * argv[]) {
     player->health  = 100;
     player->name = getName();
     
-    do {
-        cube = placeObject(dungeonX, dungeonY);
-    } while (cube == goal || cube == player->position);
-        
-    do {
-        goal = placeObject(dungeonX, dungeonY);
-    } while (goal == cube || goal == player->position);
+    placeEncounters(player);
     
     gameState = 1;
     do {
@@ -90,6 +87,20 @@ int main(int argc, const char * argv[]) {
     
     
     return 0;
+}
+
+void placeEncounters(Player* player){
+    do {
+        cube = placeObject(dungeonX, dungeonY);
+    } while (cube == gem || cube == goal || cube == player->position);
+    
+    do {
+        goal = placeObject(dungeonX, dungeonY);
+    } while (goal == gem || goal == cube || goal == player->position);
+    
+    do {
+        gem = placeObject(dungeonX, dungeonY);
+    } while (gem == goal ||gem == cube || gem == player->position);
 }
 
 char* getName(){
