@@ -8,6 +8,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
 typedef struct Room Room;
 
 struct Room {
@@ -19,7 +22,7 @@ struct Room {
 
 Room* builder;
 
-void buildAllRooms();
+void buildAllRooms(int sizeX, int sizeY);
 
 int numberOfRoomsWestOfBuilder();
 int numberOfRoomsNorthOfBuilder();
@@ -30,32 +33,39 @@ Room* newRoom ();
 
 int main(int argc, const char * argv[]) {
     
-    buildAllRooms();
+    
+    
+    buildAllRooms(8, 8);
+    //PlacePlayer
+    
+    while (true) {
+        //Prompt
+        //Get Input
+    }
     
     return 0;
 }
 
-void buildAllRooms(){
+void buildAllRooms(int sizeX, int sizeY){
     int count = 0;
     
     if (builder == NULL){
         builder = newRoom();        count++; printf("%d  ", count); //DEBUG
     }
     
-    while(numberOfRoomsWestOfBuilder() < 3){
+    while(numberOfRoomsWestOfBuilder() < sizeX-1){
         buildRoomEastOfBuilder();
         count++; printf("%d  ", count); //DEBUG
     }
-    while (numberOfRoomsNorthOfBuilder() <3){
+    while (numberOfRoomsNorthOfBuilder() < sizeY-1){
         startNewRowSouthOfPreviousRooms();
         count++; printf("\n%d  ", count); //DEBUG
 
-        while(numberOfRoomsWestOfBuilder() < 3){
+        while(numberOfRoomsWestOfBuilder() < sizeX-1){
             buildRoomEastOfBuilder();
             count++; printf("%d  ", count); //DEBUG
         }
     }
-    
 }
 
 void buildRoomEastOfBuilder(){
