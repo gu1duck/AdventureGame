@@ -37,7 +37,7 @@ int dungeonY = 4;
 void promptPlayer(Room* pointer);
 
 int randomNumber(int max);
-void placeObject(int sizeX, int sizeY, Room* pointer);
+Room* placeObject(int sizeX, int sizeY);
 
 void buildAllRooms(int sizeX, int sizeY);
 int numberOfRoomsWestOfBuilder();
@@ -56,15 +56,15 @@ int main(int argc, const char * argv[]) {
     
     //Create Player, cube and goal in different locations
     Player *player = (Player*)malloc(sizeof(Player));
-    placeObject(dungeonX, dungeonY, player->position);
+    player->position = placeObject(dungeonX, dungeonY);
     while (cube == NULL || cube == goal || cube == player->position){
-        placeObject(dungeonX, dungeonY, cube);
+        cube = placeObject(dungeonX, dungeonY);
     }
     while (goal == NULL || goal == cube || goal == player->position){
-        placeObject(dungeonX, dungeonY, goal);
+        goal = placeObject(dungeonX, dungeonY);
     }
     
-    while (1) {
+    do {
         //Prompt
         promptPlayer(player->position);
         //Get Input
@@ -73,27 +73,34 @@ int main(int argc, const char * argv[]) {
         //Win
         //Take Damage
         //Die
-    }
+    } while (0);
     
     
     
     return 0;
 }
 
-//void promptPlayer(Room* pointer){
-//    printf("You are in a dark room.\n There are avai");
-//    
-//    
-//}
-
-int randomNumber(int max){
-    return (1+rand() % max);
+void promptPlayer(Room* pointer){
+    printf("You are in a dark room. There are available exits in the following directions:\n");
+    if (pointer->north != NULL)
+        printf("NORTH ");
+    if (pointer->south != NULL)
+        printf("SOUTH ");
+    if (pointer->east != NULL)
+        printf("EAST ");
+    if (pointer->west != NULL)
+        printf("WEST ");
+    printf("\nEnter the direction in which you would like to move.\n>");
 }
 
-void placeObject(int sizeX, int sizeY, Room* pointer){
+int randomNumber(int max){
+    return (rand() % max);
+}
+
+Room* placeObject(int sizeX, int sizeY){
     int x = randomNumber(sizeX);
     int y = randomNumber(sizeY);
-    pointer = builder;
+    Room* pointer = builder;
     
     for (int i = 0 ; i < x; i++){
         pointer = pointer->east;
@@ -101,27 +108,28 @@ void placeObject(int sizeX, int sizeY, Room* pointer){
     for (int i = 0 ; i < y; i++){
         pointer = pointer->south;
     }
+    return pointer;
 }
 
 //Dungeon Construction Methods
     void buildAllRooms(int sizeX, int sizeY){
-        int count = 0;
+//        int count = 0;                      //DEBUG
         
         if (builder == NULL){
-            builder = newRoom();        count++; printf("%d  ", count); //DEBUG
+            builder = newRoom();        //count++; printf("%d  ", count); //DEBUG
         }
         
         while(numberOfRoomsWestOfBuilder() < sizeX-1){
             buildRoomEastOfBuilder();
-            count++; printf("%d  ", count); //DEBUG
+//            count++; printf("%d  ", count); //DEBUG
         }
-        while (numberOfRoomsNorthOfBuilder() < sizeY-1){
+        while (numberOfRoomsNorthOfBuilder() < sizeY){
             startNewRowSouthOfPreviousRooms();
-            count++; printf("\n%d  ", count); //DEBUG
+//            count++; printf("\n%d  ", count); //DEBUG
 
             while(numberOfRoomsWestOfBuilder() < sizeX-1){
                 buildRoomEastOfBuilder();
-                count++; printf("%d  ", count); //DEBUG
+//                count++; printf("%d  ", count); //DEBUG
             }
         }
         //return builder to northwest corner
