@@ -20,6 +20,15 @@ struct Room {
     Room* west;
 };
 
+typedef struct Player Player;
+
+struct Player {
+    Room* position;
+    int health;
+};
+
+Room* cube;
+Room* goal;
 Room* builder;
 
 void buildAllRooms(int sizeX, int sizeY);
@@ -34,14 +43,21 @@ Room* newRoom ();
 int main(int argc, const char * argv[]) {
     
     
-    
+    //BuildDungeon
     buildAllRooms(8, 8);
     //PlacePlayer
+    //PlaceCube
+    //PlaceGoal
     
-    while (true) {
+    while (1) {
         //Prompt
         //Get Input
+        //MovePlayer
+        //Check Collisions
+        //Take Damage
     }
+    
+    //Game Over
     
     return 0;
 }
