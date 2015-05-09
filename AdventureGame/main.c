@@ -36,7 +36,7 @@ int dungeonY = 4;
 int gameState = 0;
 
 void promptPlayer(Room* pointer);
-Room* getInput(Room* playerPosition);
+Room* movePlayer(Room* playerPosition);
 
 int randomNumber(int max);
 Room* placeObject(int sizeX, int sizeY);
@@ -75,7 +75,7 @@ int main(int argc, const char * argv[]) {
     do {
         //Prompt
         promptPlayer(player->position);
-        player->position = getInput(player->position);
+        player->position = movePlayer(player->position);
         //Check Collisions
         checkCollisions(player);
         //Win
@@ -123,15 +123,20 @@ void checkCollisions (Player* player){
     }
 }
 
-Room* getInput(Room* playerPosition){
-    char input[255];
+char* getInput(){
+    char* input = malloc(sizeof(char) *255);
     scanf("%s", input);
+    return input;
+}
+
+Room* movePlayer(Room* playerPosition){
+    char* input = getInput();
     switch (input[0]) {
         case 'n':
         case 'N':
             if (playerPosition->north == NULL){
                 printf("You can't move that way\n>");
-                return getInput(playerPosition);
+                return movePlayer(playerPosition);
             } else {
                 playerPosition = playerPosition->north;
                 printf("MOVED NORTH\n\n");
@@ -141,7 +146,7 @@ Room* getInput(Room* playerPosition){
         case 'S':
             if (playerPosition->south == NULL){
                 printf("You can't move that way\n>");
-                return getInput(playerPosition);
+                return movePlayer(playerPosition);
             } else {
                 playerPosition = playerPosition->south;
                 printf("MOVED SOUTH\n\n");
@@ -151,7 +156,7 @@ Room* getInput(Room* playerPosition){
         case 'E':
             if (playerPosition->east == NULL){
                 printf("You can't move that way\n>");
-                return getInput(playerPosition);
+                return movePlayer(playerPosition);
             } else {
                 playerPosition = playerPosition->east;
                 printf("MOVED EAST\n\n");
@@ -161,7 +166,7 @@ Room* getInput(Room* playerPosition){
         case 'W':
             if (playerPosition->west == NULL){
                 printf("You can't move that way\n>");
-                return getInput(playerPosition);
+                return movePlayer(playerPosition);
             } else {
                 playerPosition = playerPosition->west;
                 printf("MOVED WEST\n\n");
@@ -169,7 +174,7 @@ Room* getInput(Room* playerPosition){
             break;
         default:
             printf("What do you mean? Which direction?\n>");
-            return getInput(playerPosition);
+            return movePlayer(playerPosition);
             break;
     }
     return playerPosition;
