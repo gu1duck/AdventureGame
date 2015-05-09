@@ -35,6 +35,7 @@ int dungeonX = 4;
 int dungeonY = 4;
 
 void promptPlayer(Room* pointer);
+Room* getInput(Room* playerPosition);
 
 int randomNumber(int max);
 Room* placeObject(int sizeX, int sizeY);
@@ -67,17 +68,64 @@ int main(int argc, const char * argv[]) {
     do {
         //Prompt
         promptPlayer(player->position);
-        //Get Input
-        //MovePlayer
+        player->position = getInput(player->position);
         //Check Collisions
         //Win
         //Take Damage
         //Die
-    } while (0);
+    } while (1);
     
     
     
     return 0;
+}
+
+Room* getInput(Room* playerPosition){
+    char input[255];
+    scanf("%s", input);
+    switch (input[0]) {
+        case 'n':
+        case 'N':
+            if (playerPosition->north == NULL){
+                printf("You can't move that way\n>");
+                return getInput(playerPosition);
+            } else {
+                playerPosition = playerPosition->north;
+            }
+            break;
+        case 's':
+        case 'S':
+            if (playerPosition->south == NULL){
+                printf("You can't move that way\n>");
+                return getInput(playerPosition);
+            } else {
+                playerPosition = playerPosition->south;
+            }
+            break;
+        case 'e':
+        case 'E':
+            if (playerPosition->east == NULL){
+                printf("You can't move that way\n>");
+                return getInput(playerPosition);
+            } else {
+                playerPosition = playerPosition->east;
+            }
+            break;
+        case 'w':
+        case 'W':
+            if (playerPosition->west == NULL){
+                printf("You can't move that way\n>");
+                return getInput(playerPosition);
+            } else {
+                playerPosition = playerPosition->west;
+            }
+            break;
+        default:
+            printf("What do you mean? Which direction?\n>");
+            return getInput(playerPosition);
+            break;
+    }
+    return playerPosition;
 }
 
 void promptPlayer(Room* pointer){
@@ -123,7 +171,7 @@ Room* placeObject(int sizeX, int sizeY){
             buildRoomEastOfBuilder();
 //            count++; printf("%d  ", count); //DEBUG
         }
-        while (numberOfRoomsNorthOfBuilder() < sizeY){
+        while (numberOfRoomsNorthOfBuilder() < sizeY-1){
             startNewRowSouthOfPreviousRooms();
 //            count++; printf("\n%d  ", count); //DEBUG
 
