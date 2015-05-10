@@ -25,6 +25,8 @@ struct Room {
     char* sChalk;
     char* eChalk;
     char* wChalk;
+    char* uChalk;
+    char* dChalk;
 };
 
 typedef struct Player Player;
@@ -42,8 +44,9 @@ Room* gem  = NULL;
 Room* builder = NULL;
 int dungeonX = 4;
 int dungeonY = 4;
-int dungeonZ = 1;
+int dungeonZ = 4;
 int gameState = 0;
+int roomNo;
 
 int randomNumber(int max);
 char* getInput();
@@ -187,11 +190,26 @@ Room* markWall(Player* player){
             break;
         case 'w':
         case 'W':
-            player->position->nChalk = message;
+            player->position->wChalk = message;
             printf("You marked the NORTH wall: \"%s\"\n\n", message);
             promptPlayer(player);
             return movePlayer(player);
             break;
+        case 'u':
+        case 'U':
+            player->position->uChalk = message;
+            printf("You marked the CEILING: \"%s\"\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+        case 'd':
+        case 'D':
+            player->position->dChalk = message;
+            printf("You marked the FLOOR: \"%s\"\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+
         default:
             printf("What do you mean? ");
             return markWall(player);
@@ -270,6 +288,26 @@ Room* movePlayer(Player* player){
                 printf("MOVED WEST\n\n");
             }
             break;
+        case 'u':
+        case 'U':
+            if (player->position->up == NULL){
+                printf("You can't move that way\n>");
+                return movePlayer(player);
+            } else {
+                player->position = player->position->up;
+                printf("MOVED UP\n\n");
+            }
+            break;
+        case 'd':
+        case 'D':
+            if (player->position->down == NULL){
+                printf("You can't move that way\n>");
+                return movePlayer(player);
+            } else {
+                player->position = player->position->down;
+                printf("MOVED WEST\n\n");
+            }
+            break;
         case 'm':
         case 'M':
             return markWall(player);
@@ -292,6 +330,10 @@ void promptPlayer(Player* player){
         printf("EAST ");
     if (player->position->west != NULL)
         printf("WEST ");
+    if (player->position->up != NULL)
+        printf("UP ");
+    if (player->position->down != NULL)
+        printf("DOWN ");
     printf("\n");
     if (player->position->nChalk != NULL)
         printf("\"%s\" is written on the NORTH wall.\n", player->position->nChalk);
@@ -301,6 +343,11 @@ void promptPlayer(Player* player){
         printf("\"%s\" is written on the EAST wall.\n", player->position->eChalk);
     if (player->position->wChalk != NULL)
         printf("\"%s\" is written on the WEST wall.\n", player->position->wChalk);
+    if (player->position->uChalk != NULL)
+        printf("\"%s\" is written on the CEILING.\n", player->position->uChalk);
+    if (player->position->dChalk != NULL)
+        printf("\"%s\" is written on the FLOOR.\n", player->position->dChalk);
+
     printf("\nEnter the direction in which you would like to move.\n%s>", player->name);
 }
 
@@ -439,9 +486,14 @@ Room* newRoom (){
     room-> up = NULL;
     room-> down = NULL;
     room->nChalk = NULL;
-    room->nChalk = NULL;
-    room->nChalk = NULL;
-    room->nChalk = NULL;
+    room->sChalk = NULL;
+    room->eChalk = NULL;
+    room->wChalk = NULL;
+    room->uChalk = NULL;
+    room->dChalk = NULL;
+    
+    roomNo++;
+    printf("%d ", roomNo);
 
     return room;
 }
