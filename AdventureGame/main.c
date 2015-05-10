@@ -52,6 +52,7 @@ void takeDamage (Player* player);
 void findGem(Player* player);
 void win();
 void lose();
+void encounterCube(Player* player);
 
 void buildAllRooms(int sizeX, int sizeY);
 int numberOfRoomsWestOfBuilder();
@@ -87,7 +88,7 @@ int main(int argc, const char * argv[]) {
         //Win
         //Take Damage
         //Die
-    } while (gameState == 1);
+    } while (gameState);
     
     
     
@@ -130,6 +131,21 @@ void findGem(Player* player){
     gem = NULL;
 }
 
+void encounterCube(Player* player){
+    if(player->gem == 1){
+        printf("****The glowing gem flashes and destroys the gelatinous cube!****\n");
+        cube = NULL;
+    } else {
+        takeDamage(player);
+        //if player isn't dead, move the cube
+        if (gameState) {
+            do{
+                cube = placeObject(dungeonX, dungeonY);
+            } while (cube == goal || cube == player->position);
+        }
+    }
+}
+
 void takeDamage (Player* player){
     printf("**** You encounter the deadly gelatinous cube!****\n");
     player->health -= 50;
@@ -138,17 +154,13 @@ void takeDamage (Player* player){
     //check death
     if (player->health < 1) {
         lose();
-    } else {
-        //if player isn't dead, move the cube
-        do {
-            cube = placeObject(dungeonX, dungeonY);
-        } while (cube == goal || cube == player->position);
     }
+        
 }
 
 void checkCollisions (Player* player){
     if (player->position == cube){
-        takeDamage(player);
+        encounterCube(player);
     }
     if (player->position == goal){
         win();
@@ -156,7 +168,6 @@ void checkCollisions (Player* player){
     if (player->position == gem){
         findGem(player);
     }
-    
 }
 
 char* getInput(){
