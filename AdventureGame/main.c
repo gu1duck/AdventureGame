@@ -65,7 +65,9 @@ void buildAllRooms(int sizeX, int sizeY, int sizeZ);
 int numberOfRoomsWestOfBuilder();
 int numberOfRoomsNorthOfBuilder();
 void buildRoomEastOfBuilder();
+int numberOfRoomsBelowBuilder();
 void startNewRowSouthOfPreviousRooms();
+void startNewFloorAboveNorthWestCorner();
 void buildRow(int sizeX);
 void buildFloor(int sizeX, int sizeY);
 Room* newRoom ();
@@ -328,12 +330,21 @@ void buildAllRooms(int sizeX, int sizeY, int sizeZ){
     
     buildRow(sizeX);
     buildFloor(sizeX, sizeY);
+    while(numberOfRoomsBelowBuilder() < sizeZ-1){
+        startNewFloorAboveNorthWestCorner();
+        buildRow(sizeX);
+        buildFloor(sizeX, sizeY);
+    }
     
 }
 
 void buildRow(int sizeX){
     while(numberOfRoomsWestOfBuilder() < sizeX-1){
         buildRoomEastOfBuilder();
+    }
+    // move builder to far west room
+    while (builder->west != NULL){
+        builder = builder->west;
     }
 }
 
@@ -360,19 +371,29 @@ void buildRoomEastOfBuilder(){
         builder->north = builder->west->north->east;
         builder->west->north->east->south = builder;
     }
+    //check if builder is on at least the second floor
+    if (builder->west->down != NULL){
+        // create two-way link with room below
+        builder->down = builder->west->down->east;
+        builder->west->down->east->up = builder;
+    }
 }
 
 void startNewRowSouthOfPreviousRooms(){
-    // move builder to far west room
-    while (builder->west != NULL){
-        builder = builder->west;
-    }
     builder->south = newRoom();
     
     // create two-way link between rooms
     builder->south->north = builder;
     builder = builder->south;
     
+}
+
+void startNewFloorAboveNorthWestCorner(){
+    builder->up = newRoom();
+    
+    // create two-way link between rooms
+    builder->up->down = builder;
+    builder = builder->up;
 }
 
 int numberOfRoomsWestOfBuilder(){
@@ -396,6 +417,18 @@ int numberOfRoomsNorthOfBuilder(){
     }
     return count;
 }
+
+int numberOfRoomsBelowBuilder(){
+    Room* query = builder;
+    
+    int count = 0;
+    while (query->down != NULL){
+        query = query->down;
+        count ++;
+    }
+    return count;
+}
+
 
 Room* newRoom (){
     Room* room = (Room*)malloc(sizeof(Room));
