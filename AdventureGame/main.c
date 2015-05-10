@@ -19,6 +19,10 @@ struct Room {
     Room* south;
     Room* east;
     Room* west;
+    char* nChalk;
+    char* sChalk;
+    char* eChalk;
+    char* wChalk;
 };
 
 typedef struct Player Player;
@@ -147,15 +151,55 @@ void encounterCube(Player* player){
     }
 }
 
+Room* markWall(Player* player){
+    printf("Mark which wall?\n%s>", player->name);
+    char* wall = getInput();
+    printf("What word would you like to write?\n%s>", player->name);
+    char* message = getInput();
+    switch (wall[0]) {
+        case 'n':
+        case 'N':
+            player->position->nChalk = message;
+            printf("You marked the NORTH wall: %s\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+        case 's':
+        case 'S':
+            player->position->sChalk = message;
+            printf("You marked the SOUTH wall: %s\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+        case 'e':
+        case 'E':
+            player->position->eChalk = message;
+            printf("You marked the EAST wall: %s\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+        case 'w':
+        case 'W':
+            player->position->nChalk = message;
+            printf("You marked the NORTH wall: %s\n\n", message);
+            promptPlayer(player);
+            return movePlayer(player);
+            break;
+        default:
+            printf("What do you mean? ");
+            return markWall(player);
+            break;
+    }
+}
+
 void takeDamage (Player* player){
     player->health -= 50;
     printf("Health reduced to %d\n\n", player->health);
     
     //check death
     if (player->health < 1) {
-//        lose();
+        lose();
     }
-        
 }
 
 void checkCollisions (Player* player){
@@ -163,7 +207,7 @@ void checkCollisions (Player* player){
         encounterCube(player);
     }
     if (player->position == goal){
-//        win();
+        win();
     }
     if (player->position == gem){
         findGem(player);
@@ -218,6 +262,10 @@ Room* movePlayer(Player* player){
                 player->position = player->position->west;
                 printf("MOVED WEST\n\n");
             }
+            break;
+        case 'm':
+        case 'M':
+            return markWall(player);
             break;
         default:
             printf("What do you mean? Which direction?\n%s>", player->name);
@@ -341,6 +389,10 @@ Room* placeObject(int sizeX, int sizeY){
         room-> south = NULL;
         room-> east = NULL;
         room-> west = NULL;
+        room->nChalk = NULL;
+        room->nChalk = NULL;
+        room->nChalk = NULL;
+        room->nChalk = NULL;
 
         return room;
     }
