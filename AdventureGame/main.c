@@ -132,6 +132,7 @@ void findGem(Player* player){
 }
 
 void encounterCube(Player* player){
+    printf("**** You encounter the deadly gelatinous cube!****\n");
     if(player->gem == 1){
         printf("****The glowing gem flashes and destroys the gelatinous cube!****\n");
         cube = NULL;
@@ -147,13 +148,12 @@ void encounterCube(Player* player){
 }
 
 void takeDamage (Player* player){
-    printf("**** You encounter the deadly gelatinous cube!****\n");
     player->health -= 50;
     printf("Health reduced to %d\n\n", player->health);
     
     //check death
     if (player->health < 1) {
-        lose();
+//        lose();
     }
         
 }
@@ -163,7 +163,7 @@ void checkCollisions (Player* player){
         encounterCube(player);
     }
     if (player->position == goal){
-        win();
+//        win();
     }
     if (player->position == gem){
         findGem(player);
