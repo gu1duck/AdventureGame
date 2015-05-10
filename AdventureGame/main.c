@@ -160,28 +160,28 @@ Room* markWall(Player* player){
         case 'n':
         case 'N':
             player->position->nChalk = message;
-            printf("You marked the NORTH wall: %s\n\n", message);
+            printf("You marked the NORTH wall: \"%s\"\n\n", message);
             promptPlayer(player);
             return movePlayer(player);
             break;
         case 's':
         case 'S':
             player->position->sChalk = message;
-            printf("You marked the SOUTH wall: %s\n\n", message);
+            printf("You marked the SOUTH wall: \"%s\"\n\n", message);
             promptPlayer(player);
             return movePlayer(player);
             break;
         case 'e':
         case 'E':
             player->position->eChalk = message;
-            printf("You marked the EAST wall: %s\n\n", message);
+            printf("You marked the EAST wall: \"%s\"\n\n", message);
             promptPlayer(player);
             return movePlayer(player);
             break;
         case 'w':
         case 'W':
             player->position->nChalk = message;
-            printf("You marked the NORTH wall: %s\n\n", message);
+            printf("You marked the NORTH wall: \"%s\"\n\n", message);
             promptPlayer(player);
             return movePlayer(player);
             break;
@@ -285,6 +285,15 @@ void promptPlayer(Player* player){
         printf("EAST ");
     if (player->position->west != NULL)
         printf("WEST ");
+    printf("\n");
+    if (player->position->nChalk != NULL)
+        printf("\"%s\" is written on the NORTH wall.\n", player->position->nChalk);
+    if (player->position->sChalk != NULL)
+        printf("\"%s\" is written on the SOUTH wall.\n", player->position->sChalk);
+    if (player->position->eChalk != NULL)
+        printf("\"%s\" is written on the EAST wall.\n", player->position->eChalk);
+    if (player->position->wChalk != NULL)
+        printf("\"%s\" is written on the WEST wall.\n", player->position->wChalk);
     printf("\nEnter the direction in which you would like to move.\n%s>", player->name);
 }
 
