@@ -27,6 +27,7 @@ struct Player {
     Room* position;
     int health;
     char* name;
+    int gem;
 };
 
 Room* cube = NULL;
@@ -48,6 +49,9 @@ void promptPlayer(Player* player);
 Room* movePlayer(Player* player);
 void checkCollisions (Player* player);
 void takeDamage (Player* player);
+void findGem(Player* player);
+void win();
+void lose();
 
 void buildAllRooms(int sizeX, int sizeY);
 int numberOfRoomsWestOfBuilder();
@@ -69,6 +73,7 @@ int main(int argc, const char * argv[]) {
     player->position = placeObject(dungeonX, dungeonY);
     player->health  = 100;
     player->name = getName();
+    player->gem = 0;
     
     placeEncounters(player);
     
@@ -119,6 +124,12 @@ void lose(){
     gameState = 0;
 }
 
+void findGem(Player* player){
+    printf("****You found the a shiny gem! You stick it in your pocket****\n");
+    player->gem = 1;
+    gem = NULL;
+}
+
 void takeDamage (Player* player){
     printf("**** You encounter the deadly gelatinous cube!****\n");
     player->health -= 50;
@@ -140,8 +151,12 @@ void checkCollisions (Player* player){
         takeDamage(player);
     }
     if (player->position == goal){
-    //    win();
+        win();
     }
+    if (player->position == gem){
+        findGem(player);
+    }
+    
 }
 
 char* getInput(){
