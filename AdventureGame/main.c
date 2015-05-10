@@ -19,6 +19,8 @@ struct Room {
     Room* south;
     Room* east;
     Room* west;
+    Room* up;
+    Room* down;
     char* nChalk;
     char* sChalk;
     char* eChalk;
@@ -40,6 +42,7 @@ Room* gem  = NULL;
 Room* builder = NULL;
 int dungeonX = 4;
 int dungeonY = 4;
+int dungeonZ = 1;
 int gameState = 0;
 
 int randomNumber(int max);
@@ -58,11 +61,13 @@ void win();
 void lose();
 void encounterCube(Player* player);
 
-void buildAllRooms(int sizeX, int sizeY);
+void buildAllRooms(int sizeX, int sizeY, int sizeZ);
 int numberOfRoomsWestOfBuilder();
 int numberOfRoomsNorthOfBuilder();
 void buildRoomEastOfBuilder();
 void startNewRowSouthOfPreviousRooms();
+void buildRow(int sizeX);
+void buildFloor(int sizeX, int sizeY);
 Room* newRoom ();
 
 int main(int argc, const char * argv[]) {
@@ -71,7 +76,7 @@ int main(int argc, const char * argv[]) {
     srand((unsigned)time(NULL));
     
     //BuildDungeon based on X and Y dimensions
-    buildAllRooms(dungeonX, dungeonY);
+    buildAllRooms(dungeonX, dungeonY, dungeonZ);
     
     //Create Player, cube and goal in different locations
     Player *player = (Player*)malloc(sizeof(Player));
@@ -316,94 +321,96 @@ Room* placeObject(int sizeX, int sizeY){
 }
 
 //Dungeon Construction Methods
-    void buildAllRooms(int sizeX, int sizeY){
-//        int count = 0;                      //DEBUG
-        
-        if (builder == NULL){
-            builder = newRoom();        //count++; printf("%d  ", count); //DEBUG
-        }
-        
-        while(numberOfRoomsWestOfBuilder() < sizeX-1){
-            buildRoomEastOfBuilder();
-//            count++; printf("%d  ", count); //DEBUG
-        }
-        while (numberOfRoomsNorthOfBuilder() < sizeY-1){
-            startNewRowSouthOfPreviousRooms();
-//            count++; printf("\n%d  ", count); //DEBUG
-
-            while(numberOfRoomsWestOfBuilder() < sizeX-1){
-                buildRoomEastOfBuilder();
-//                count++; printf("%d  ", count); //DEBUG
-            }
-        }
-        //return builder to northwest corner
-        while (builder->west != NULL) builder = builder->west;
-        while (builder->north != NULL) builder = builder->north;
-        
+void buildAllRooms(int sizeX, int sizeY, int sizeZ){
+    if (builder == NULL){
+        builder = newRoom();
     }
+    
+    buildRow(sizeX);
+    buildFloor(sizeX, sizeY);
+    
+}
 
-    void buildRoomEastOfBuilder(){
-        builder->east = newRoom();
-        
-        // create two-way link between rooms
-        builder->east->west = builder;
-        builder = builder->east;
-        
-        //check if builder is on at least the second row
-        if (builder->west->north != NULL){
-            // create two-way link with room to the north
-            builder->north = builder->west->north->east;
-            builder->west->north->east->south = builder;
-        }
+void buildRow(int sizeX){
+    while(numberOfRoomsWestOfBuilder() < sizeX-1){
+        buildRoomEastOfBuilder();
     }
+}
 
-    void startNewRowSouthOfPreviousRooms(){
-        // move builder to far west room
-        while (builder->west != NULL){
-            builder = builder->west;
-        }
-        builder->south = newRoom();
-        
-        // create two-way link between rooms
-        builder->south->north = builder;
-        builder = builder->south;
-        
+void buildFloor(int sizeX, int sizeY){
+    while (numberOfRoomsNorthOfBuilder() < sizeY-1){
+        startNewRowSouthOfPreviousRooms();
+        buildRow(sizeX);
     }
+    //return builder to northwest corner
+    while (builder->west != NULL) builder = builder->west;
+    while (builder->north != NULL) builder = builder->north;
+}
 
-    int numberOfRoomsWestOfBuilder(){
-        Room* query = builder;
-        
-        int count = 0;
-        while (query->west != NULL){
-            query = query->west;
-            count ++;
-        }
-        return count;
+void buildRoomEastOfBuilder(){
+    builder->east = newRoom();
+    
+    // create two-way link between rooms
+    builder->east->west = builder;
+    builder = builder->east;
+    
+    //check if builder is on at least the second row
+    if (builder->west->north != NULL){
+        // create two-way link with room to the north
+        builder->north = builder->west->north->east;
+        builder->west->north->east->south = builder;
     }
+}
 
-    int numberOfRoomsNorthOfBuilder(){
-        Room* query = builder;
-        
-        int count = 0;
-        while (query->north != NULL){
-            query = query->north;
-            count ++;
-        }
-        return count;
+void startNewRowSouthOfPreviousRooms(){
+    // move builder to far west room
+    while (builder->west != NULL){
+        builder = builder->west;
     }
+    builder->south = newRoom();
+    
+    // create two-way link between rooms
+    builder->south->north = builder;
+    builder = builder->south;
+    
+}
 
-    Room* newRoom (){
-        Room* room = (Room*)malloc(sizeof(Room));
-        room-> north = NULL;
-        room-> south = NULL;
-        room-> east = NULL;
-        room-> west = NULL;
-        room->nChalk = NULL;
-        room->nChalk = NULL;
-        room->nChalk = NULL;
-        room->nChalk = NULL;
-
-        return room;
+int numberOfRoomsWestOfBuilder(){
+    Room* query = builder;
+    
+    int count = 0;
+    while (query->west != NULL){
+        query = query->west;
+        count ++;
     }
+    return count;
+}
+
+int numberOfRoomsNorthOfBuilder(){
+    Room* query = builder;
+    
+    int count = 0;
+    while (query->north != NULL){
+        query = query->north;
+        count ++;
+    }
+    return count;
+}
+
+Room* newRoom (){
+    Room* room = (Room*)malloc(sizeof(Room));
+    room-> north = NULL;
+    room-> south = NULL;
+    room-> east = NULL;
+    room-> west = NULL;
+    room-> up = NULL;
+    room-> down = NULL;
+    room->nChalk = NULL;
+    room->nChalk = NULL;
+    room->nChalk = NULL;
+    room->nChalk = NULL;
+
+    return room;
+}
 
 
